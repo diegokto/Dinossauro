@@ -17,6 +17,7 @@ public class Animation {
     public void iniciar() {
         currentFrame = -1;
         playedOnce = false;
+        int x = 1;
     }
 
     public void setFrames(Bitmap[] frames) {
