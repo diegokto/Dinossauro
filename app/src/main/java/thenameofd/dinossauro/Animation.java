@@ -17,7 +17,6 @@ public class Animation {
     public void iniciar() {
         currentFrame = -1;
         playedOnce = false;
-        int x = 1;
     }
 
     public void setFrames(Bitmap[] frames) {
@@ -61,6 +60,6 @@ public class Animation {
     }
 
     public boolean animando() {
-        return currentFrame > 0 && playedOnce == false;
+        return currentFrame > 0 && !playedOnce;
     }
 }
