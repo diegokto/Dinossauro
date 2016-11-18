@@ -35,9 +35,12 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback
 
     private Preference preference;
 
+    private int meioTela;
+
     public GamePanel(Context context) {
         super(context);
         preference = new Preference(context);
+
 
         getHolder().addCallback(this);
         thread = new MainThread(getHolder(), this);
@@ -47,6 +50,8 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback
 
     @Override
     public void surfaceCreated(SurfaceHolder holder) {
+        meioTela = getHeight()/2;
+
         bg = new Background(this);
         bg.setVector(-10);
 
@@ -131,7 +136,13 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         if (event.getAction() == MotionEvent.ACTION_DOWN) {
-            player.abaixar();
+            System.out.println("meiotela " + meioTela);
+            if (event.getY() < meioTela) {
+                player.pular();
+            }
+            else {
+                player.abaixar();
+            }
         }
 
         return super.onTouchEvent(event);
