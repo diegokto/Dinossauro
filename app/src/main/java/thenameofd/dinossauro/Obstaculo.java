@@ -22,6 +22,12 @@ public class Obstaculo {
     private int height;
     private int deviceWidth;
     private int deviceHeight;
+    private int margemErroLeft = 20;
+    private int margemErroRight = 20;
+    private int margemErroTop = 20;
+    private int margemErroBottom = 20;
+
+    private boolean fly;
 
     private int[] ids = {
 //            R.drawable.flamingo1,
@@ -55,9 +61,15 @@ public class Obstaculo {
         System.out.println(groundPxScaled);
         y = deviceHeight - groundPxScaled - image.getHeight();
 
+        margemErroRight = image.getWidth()/2;
+
         //flamingo voador
         if (index != 0) {
+            fly = true;
             y += -(deviceHeight/7);
+
+
+            margemErroBottom = 0;
         }
     }
 
@@ -90,7 +102,7 @@ public class Obstaculo {
     }
 
     public Rect getRectangle() {
-        return new Rect(x, y, x+image.getWidth(), y+image.getHeight());
+        return new Rect(x + margemErroLeft, y + margemErroTop, x + image.getWidth() - margemErroRight, y + image.getHeight() - margemErroBottom);
     }
 
     public boolean offScreen() {
@@ -112,6 +124,10 @@ public class Obstaculo {
         float scale = newHeight*1.0f/image.getHeight();
         int newWidth = round(image.getWidth()*scale);
         return Bitmap.createScaledBitmap(image, newWidth, newHeight, true);
+    }
+
+    public boolean obstaculoVoa() {
+        return fly;
     }
 }
 

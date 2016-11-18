@@ -38,7 +38,8 @@ public class Player {
     private boolean piscar;
 
     private int g = 10; //gravidade
-    private int margemErro = 20;
+    private int margemErroY = 20;
+    private int margemErroX = 20;
 
     private int deviceHeight;
 
@@ -89,7 +90,7 @@ public class Player {
 
         animation_down = new Animation();
         animation_down.setFrames(images_down);
-        animation_down.setDelay(80);
+        animation_down.setDelay(100);
 
         startTime = System.nanoTime();
         delay = 50;
@@ -152,7 +153,7 @@ public class Player {
     }
 
     public Rect getRectangle() {
-        return new Rect(x+margemErro, y, x+ animation_run.getImage().getWidth()-margemErro, y+ animation_run.getImage().getHeight()-margemErro);
+        return new Rect(x + margemErroX, y, x+ animation_run.getImage().getWidth()- margemErroX, y + animation_run.getImage().getHeight()- margemErroY);
     }
 
     public void pular() {
@@ -209,11 +210,11 @@ public class Player {
         }
     }
 
-    private boolean pulando() {
+    public boolean pulando() {
         return jump || animation_jump.animando();
     }
 
-    private boolean abaixando() {
+    public boolean abaixando() {
         if (animation_down.terminou())
             down = false;
         return down;

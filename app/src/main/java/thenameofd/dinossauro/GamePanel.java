@@ -153,13 +153,20 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback
     }
 
     private boolean collision() {
-//        Rect playerRect = player.getRectangle();
-//        for (int i = 0; i < obstaculos.size(); i++) {
-//            if (Rect.intersects(playerRect, obstaculos.get(i).getRectangle())) {
-//                player.perdeu();
-//                return true;
-//            }
-//        }
+        Rect playerRect = player.getRectangle();
+        for (int i = 0; i < obstaculos.size(); i++) {
+            Obstaculo obstaculo = obstaculos.get(i);
+            if (Rect.intersects(playerRect, obstaculo.getRectangle())) {
+                if (obstaculo.obstaculoVoa() && !player.abaixando()) {
+                    player.perdeu();
+                    return true;
+                }
+                else if (!obstaculo.obstaculoVoa() && !player.pulando()) {
+                    player.perdeu();
+                    return true;
+                }
+            }
+        }
 
         return false;
     }
