@@ -11,7 +11,7 @@ import static java.lang.Math.random;
 import static java.lang.Math.round;
 
 public class Obstaculo {
-    private final int distanciaTransparente = 6;
+    private final int distanciaTransparente = 10;
 
     private int distanciaY = Background.GROUND - distanciaTransparente;
     private int x;
@@ -21,32 +21,35 @@ public class Obstaculo {
     private int width;
     private int height;
     private int deviceWidth;
+    private int deviceHeight;
 
     private int[] ids = {
-            R.drawable.ace1,
-            R.drawable.ace2,
-            R.drawable.ace3,
-            R.drawable.ace4,
-            R.drawable.ace5,
+            R.drawable.flamingo1,
+            R.drawable.flamingo2,
+            R.drawable.flamingo3
     };
 
     private Bitmap image;
 
     public Obstaculo(GamePanel gamePanel) {
+        deviceWidth = gamePanel.getWidth();
+        deviceHeight = gamePanel.getHeight();
+
         Random r = new Random();
-        int index = r.nextInt(5);
+        int index = r.nextInt(ids.length)%ids.length;
 
         image = BitmapFactory.decodeResource(gamePanel.getResources(), ids[index]);
+        image = resizeImage(image);
 
-        deviceWidth = gamePanel.getWidth();
         x = deviceWidth;
-
-        int deviceHeight = gamePanel.getHeight();
         int groundPxScaled = round((deviceHeight*1.0f/Background.HEIGHT)*distanciaY);
         System.out.println(groundPxScaled);
         y = deviceHeight - groundPxScaled - image.getHeight();
 
-
+        //flamingo voador
+        if (index == 0) {
+            y += -(deviceHeight/7);
+        }
     }
 
     public void setDx(int dx) {
@@ -86,6 +89,13 @@ public class Obstaculo {
             return true;
 
         return false;
+    }
+
+    private Bitmap resizeImage(Bitmap image) {
+        int newHeight = round(deviceHeight*1.0f/6);
+        float scale = newHeight*1.0f/image.getHeight();
+        int newWidth = round(image.getWidth()*scale);
+        return Bitmap.createScaledBitmap(image, newWidth, newHeight, true);
     }
 }
 

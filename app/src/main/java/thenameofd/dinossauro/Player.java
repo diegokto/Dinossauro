@@ -24,8 +24,12 @@ public class Player {
     private Bitmap[] images_jump;
     private Animation animation_jump;
 
+    private Bitmap[] images_down;
+    private Animation animation_down;
+
     private boolean gameOver;
     private boolean jump;
+    private boolean down;
 
     private int groundY;
 
@@ -64,6 +68,16 @@ public class Player {
         images_jump[8] = BitmapFactory.decodeResource(gamePanel.getResources(), R.drawable.ace_jump9);
         resizeImages(images_jump);
 
+        images_down = new Bitmap[7];
+        images_down[0] = BitmapFactory.decodeResource(gamePanel.getResources(), R.drawable.ace_down1);
+        images_down[1] = BitmapFactory.decodeResource(gamePanel.getResources(), R.drawable.ace_down2);
+        images_down[2] = BitmapFactory.decodeResource(gamePanel.getResources(), R.drawable.ace_down3);
+        images_down[3] = BitmapFactory.decodeResource(gamePanel.getResources(), R.drawable.ace_down4);
+        images_down[4] = BitmapFactory.decodeResource(gamePanel.getResources(), R.drawable.ace_down5);
+        images_down[5] = BitmapFactory.decodeResource(gamePanel.getResources(), R.drawable.ace_down5);
+        images_down[6] = BitmapFactory.decodeResource(gamePanel.getResources(), R.drawable.ace_down1);
+        resizeImages(images_down);
+
         animation_run = new Animation();
         animation_run.setFrames(images_run);
         animation_run.setDelay(80);
@@ -72,6 +86,10 @@ public class Player {
         animation_jump = new Animation();
         animation_jump.setFrames(images_jump);
         animation_jump.setDelay(80);
+
+        animation_down = new Animation();
+        animation_down.setFrames(images_down);
+        animation_down.setDelay(80);
 
         startTime = System.nanoTime();
         delay = 50;
@@ -87,7 +105,7 @@ public class Player {
     }
 
     public void update(){
-        if (jump || animation_jump.animando()) {
+        if (pulando()) {
             long elapsed = (System.nanoTime() - startTime)/1000000;
             if (elapsed > delay) {
                 startTime = System.nanoTime();
@@ -102,6 +120,9 @@ public class Player {
             }
 
             animation_jump.update();
+        }
+        else if (abaixando()) {
+            animation_down.update();
         }
         else {
             animation_run.update();
@@ -142,6 +163,13 @@ public class Player {
         }
     }
 
+    public void abaixar() {
+        if (!down) {
+            down = true;
+            animation_down.iniciar();
+        }
+    }
+
     public void perdeu() {
         gameOver = true;
     }
@@ -159,7 +187,11 @@ public class Player {
         if (!gameOver) {
             if (pulando()) {
                 return animation_jump.getImage();
-            } else {
+            }
+            else if (abaixando()) {
+                return animation_down.getImage();
+            }
+            else {
                 return animation_run.getImage();
             }
         }
@@ -179,5 +211,11 @@ public class Player {
 
     private boolean pulando() {
         return jump || animation_jump.animando();
+    }
+
+    private boolean abaixando() {
+        if (animation_down.terminou())
+            down = false;
+        return down;
     }
 }
