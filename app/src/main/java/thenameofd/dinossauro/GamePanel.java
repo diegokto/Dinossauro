@@ -3,6 +3,8 @@ package thenameofd.dinossauro;
 import android.content.Context;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
 import android.graphics.Rect;
 import android.support.annotation.NonNull;
 import android.view.MotionEvent;
@@ -28,8 +30,14 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback
     private long delay;
     private Random r;
 
+    private long startTime_score;
+    private long delay_score = 500;
+
+    private Preference preference;
+
     public GamePanel(Context context) {
         super(context);
+        preference = new Preference(context);
 
         getHolder().addCallback(this);
         thread = new MainThread(getHolder(), this);
@@ -49,6 +57,8 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback
         r = new Random();
         setDelay();
 
+        startTime_score = System.nanoTime();
+
         player = new Player(this);
 
         thread.setRunning(true);
@@ -67,6 +77,8 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback
             try {
                 thread.setRunning(false);
                 thread.join();
+
+                retry = false;
             } catch (InterruptedException e){
                 e.printStackTrace();
             }
@@ -89,7 +101,9 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback
             for (int i = 0; i < obstaculos.size(); i++) {
                 obstaculos.get(i).update();
             }
+
             player.update();
+            updateScore();
         }
     }
 
@@ -111,6 +125,7 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback
         }
 
         player.draw(canvas);
+        drawScore(canvas);
     }
 
     @Override
@@ -136,5 +151,21 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback
 //        }
 
         return false;
+    }
+
+    private void updateScore() {
+        long elapsed = (System.nanoTime() - startTime_score)/1000000;
+        if (elapsed > delay_score) {
+            startTime_score = System.nanoTime();
+            int score = preference.getScore() + 1;
+            preference.setScore(score);
+        }
+    }
+
+    private void drawScore(Canvas canvas) {
+        Paint paint = new Paint();
+        paint.setColor(Color.BLACK);
+        paint.setTextSize(40);
+        canvas.drawText("Score: " + preference.getScore(), canvas.getWidth() - 300, 100, paint);
     }
 }
