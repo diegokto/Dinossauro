@@ -11,7 +11,7 @@ import static java.lang.Math.random;
 import static java.lang.Math.round;
 
 public class Obstaculo {
-    private final int distanciaTransparente = 10;
+    private final int distanciaTransparente = 0;
 
     private int distanciaY = Background.GROUND - distanciaTransparente;
     private int x;
@@ -24,9 +24,12 @@ public class Obstaculo {
     private int deviceHeight;
 
     private int[] ids = {
-            R.drawable.flamingo1,
-            R.drawable.flamingo2,
-            R.drawable.flamingo3
+//            R.drawable.flamingo1,
+//            R.drawable.flamingo2,
+//            R.drawable.flamingo3,
+            R.drawable.flamingo4,
+            R.drawable.flamingo5,
+            R.drawable.flamingo6,
     };
 
     private Bitmap image;
@@ -39,7 +42,13 @@ public class Obstaculo {
         int index = r.nextInt(ids.length)%ids.length;
 
         image = BitmapFactory.decodeResource(gamePanel.getResources(), ids[index]);
-        image = resizeImage(image);
+        if (index == 0) {
+            image = resizeImage(image, round(deviceHeight*1.0f/5));
+        }
+        else {
+            image = resizeImage(image);
+        }
+
 
         x = deviceWidth;
         int groundPxScaled = round((deviceHeight*1.0f/Background.HEIGHT)*distanciaY);
@@ -47,7 +56,7 @@ public class Obstaculo {
         y = deviceHeight - groundPxScaled - image.getHeight();
 
         //flamingo voador
-        if (index == 0) {
+        if (index != 0) {
             y += -(deviceHeight/7);
         }
     }
@@ -89,6 +98,13 @@ public class Obstaculo {
             return true;
 
         return false;
+    }
+
+    private Bitmap resizeImage(Bitmap image, int newHeight) {
+        //newHeight = round(deviceHeight*1.0f/6);
+        float scale = newHeight*1.0f/image.getHeight();
+        int newWidth = round(image.getWidth()*scale);
+        return Bitmap.createScaledBitmap(image, newWidth, newHeight, true);
     }
 
     private Bitmap resizeImage(Bitmap image) {
