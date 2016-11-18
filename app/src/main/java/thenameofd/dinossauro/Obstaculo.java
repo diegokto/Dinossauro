@@ -16,7 +16,6 @@ public class Obstaculo {
     private int distanciaY = Background.GROUND - distanciaTransparente;
     private int x;
     private int y;
-    private int dx = -12;
     private int dy;
     private int width;
     private int height;
@@ -72,12 +71,8 @@ public class Obstaculo {
         }
     }
 
-    public void setDx(int dx) {
-        this.dx = dx;
-    }
-
     public void update(){
-        x += dx;
+        x += GamePanel.VEL_X;
     }
 
     public void draw(Canvas canvas) {

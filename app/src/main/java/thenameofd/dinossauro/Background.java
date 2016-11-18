@@ -11,7 +11,7 @@ public class Background
     public static final int HEIGHT = 533;
     public static final int WIDTH = 800;
     private Bitmap image;
-    private int x, y, dx;
+    private int x, y;
 
     public Background(GamePanel gamePanel)
     {
@@ -21,7 +21,7 @@ public class Background
 
     public void update()
     {
-        x += dx;
+        x += GamePanel.VEL_X;
         if (x < - image.getWidth()) {
             x = 0;
         }
@@ -36,10 +36,5 @@ public class Background
                 canvas.drawBitmap(image, x+image.getWidth(), y, null);
             }
         }
-    }
-
-    public void setVector(int dx)
-    {
-        this.dx = dx;
     }
 }

@@ -21,6 +21,8 @@ import java.util.Random;
 
 public class GamePanel extends SurfaceView implements SurfaceHolder.Callback
 {
+    public static int VEL_X = -12;
+
     private MainThread thread;
     private Background bg;
     private Player player;
@@ -53,7 +55,6 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback
         meioTela = getHeight()/2;
 
         bg = new Background(this);
-        bg.setVector(-12);
 
         obstaculos = new ArrayList<Obstaculo>();
         obstaculos.add(new Obstaculo(this));
