@@ -100,7 +100,6 @@ public class Player {
         x = 100;
 
         int groundPxScaled = round((deviceHeight*1.0f/Background.HEIGHT)*distanciaY);
-        System.out.println(groundPxScaled);
         groundY = deviceHeight - groundPxScaled - images_run[0].getHeight();
         y = groundY;
     }

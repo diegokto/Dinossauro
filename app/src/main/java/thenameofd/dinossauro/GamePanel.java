@@ -53,7 +53,7 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback
         meioTela = getHeight()/2;
 
         bg = new Background(this);
-        bg.setVector(-10);
+        bg.setVector(-12);
 
         obstaculos = new ArrayList<Obstaculo>();
         obstaculos.add(new Obstaculo(this));
@@ -136,7 +136,6 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         if (event.getAction() == MotionEvent.ACTION_DOWN) {
-            System.out.println("meiotela " + meioTela);
             if (event.getY() < meioTela) {
                 player.pular();
             }

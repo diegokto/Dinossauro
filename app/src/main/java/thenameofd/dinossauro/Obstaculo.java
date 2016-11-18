@@ -16,7 +16,7 @@ public class Obstaculo {
     private int distanciaY = Background.GROUND - distanciaTransparente;
     private int x;
     private int y;
-    private int dx = -10;
+    private int dx = -12;
     private int dy;
     private int width;
     private int height;
@@ -58,7 +58,6 @@ public class Obstaculo {
 
         x = deviceWidth;
         int groundPxScaled = round((deviceHeight*1.0f/Background.HEIGHT)*distanciaY);
-        System.out.println(groundPxScaled);
         y = deviceHeight - groundPxScaled - image.getHeight();
 
         margemErroRight = image.getWidth()/2;

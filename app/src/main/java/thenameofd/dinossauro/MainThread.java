@@ -50,6 +50,7 @@ public class MainThread extends Thread {
                     catch(Exception e) { e.printStackTrace(); }
                 }
             }
+
             timeMillis = (System.nanoTime() - startTime) / 1000000;
             waitTime = targetTime - timeMillis;
 
@@ -57,14 +58,14 @@ public class MainThread extends Thread {
                 this.sleep(waitTime);
             }catch (Exception e){}
 
-            totalTime += System.nanoTime();
+            totalTime += System.nanoTime() - startTime;
             frameCount++;
             if (frameCount == FPS) {
-                averageFPS = 1000/((totalTime/frameCount)/100000);
+                averageFPS = frameCount/((totalTime/1000000)/1000);
                 frameCount = 0;
                 totalTime = 0;
 
-                System.out.println(averageFPS);
+                //System.out.println("AverageFPS, totalTime: " + averageFPS + "," + totalTime/1000000);
             }
         }
     }
