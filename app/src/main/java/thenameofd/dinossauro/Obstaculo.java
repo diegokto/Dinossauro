@@ -62,9 +62,17 @@ public class Obstaculo {
         margemErroRight = image.getWidth()/2;
 
         //flamingo voador
-        if (index != 0) {
+        if (index == 1) {
             fly = true;
-            y += -(deviceHeight/7);
+            y += -(deviceHeight/8);
+
+
+            margemErroBottom = 0;
+        }
+
+        if (index == 2) {
+            fly = true;
+            y += -(deviceHeight/6);
 
 
             margemErroBottom = 0;

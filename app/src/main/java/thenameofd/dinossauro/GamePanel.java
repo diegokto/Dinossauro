@@ -44,6 +44,7 @@ public class GamePanel
     private boolean gameOver;
     private boolean gamePause;
     private boolean gamePlay;
+    private boolean gameOpen;
 
     private Preference preference;
 
@@ -81,34 +82,37 @@ public class GamePanel
         startTime_score = System.nanoTime();
 
         player = new Player(this);
+        gameOpen = true;
     }
 
 
 
     public void update()
     {
-        if (!gamePause) {
-            if (!gameOver) {
-                if (!collision()) {
-                    bg.update();
+        if (!gameOpen) {
+            if (!gamePause) {
+                if (!gameOver) {
+                    if (!collision()) {
+                        bg.update();
 
+                        frameCount++;
+                        if (frameCount > frame) {
+                            frameCount = 0;
+                            obstaculos.add(new Obstaculo(this));
+
+                            setDelay();
+                        }
+
+                        for (int i = 0; i < obstaculos.size(); i++) {
+                            obstaculos.get(i).update();
+                        }
+
+                        player.update();
+                        updateScore();
+                    }
+                } else {
                     frameCount++;
-                    if (frameCount > frame) {
-                        frameCount = 0;
-                        obstaculos.add(new Obstaculo(this));
-
-                        setDelay();
-                    }
-
-                    for (int i = 0; i < obstaculos.size(); i++) {
-                        obstaculos.get(i).update();
-                    }
-
-                    player.update();
-                    updateScore();
                 }
-            } else {
-                frameCount++;
             }
         }
     }
@@ -132,7 +136,11 @@ public class GamePanel
         player.draw(canvas);
         drawScore(canvas);
 
-        if (gameOver) {
+        if (gameOpen) {
+            drawGameOpen(canvas);
+        }
+
+        else if (gameOver) {
             drawGameOver(canvas);
         }
 
@@ -143,7 +151,12 @@ public class GamePanel
 
     public void onTouchEvent(MotionEvent event) {
         if (event.getAction() == MotionEvent.ACTION_DOWN) {
-            if (gamePause) {
+            if (gameOpen) {
+                gamePlay = true;
+                gameOpen = false;
+                gamePause = false;
+            }
+            else if (gamePause) {
                 gamePlay = true;
                 gamePause = false;
             }
@@ -199,6 +212,15 @@ public class GamePanel
         paint.setColor(Color.BLACK);
         paint.setTextSize(40);
         canvas.drawText("Score: " + preference.getScore(), canvas.getWidth() - 300, 100, paint);
+    }
+
+    private void drawGameOpen(Canvas canvas) {
+        Paint paint = new Paint();
+        paint.setColor(Color.WHITE);
+        paint.setTextSize(40);
+        canvas.drawText("DINOSSAURO", canvas.getWidth()/2 - 120, canvas.getHeight()/2 - 50, paint);
+        canvas.drawText("DIOGO DE FREITAS KATO " , canvas.getWidth()/2 - 260, canvas.getHeight()/2, paint);
+        canvas.drawText("Toque na tela para começar", canvas.getWidth()/2 - 300, canvas.getHeight()/2 -200, paint);
     }
 
     private void drawGameOver(Canvas canvas) {
