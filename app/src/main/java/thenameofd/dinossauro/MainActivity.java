@@ -8,12 +8,37 @@ import android.view.WindowManager;
 
 public class MainActivity extends Activity {
 
+    private GamePanel gamePanel;
+    private GameView gameView;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
-        setContentView(new GamePanel(this));
+        gamePanel = new GamePanel(this);
+
+        gamePanel = new GamePanel(this);
+
+        gameView = new GameView(getApplicationContext(), gamePanel);
+        setContentView(gameView);
+    }
+
+    @Override
+    protected void onResume()
+    {
+        super.onResume();
+
+        if (gamePanel != null)
+            gamePanel.resumeEvent();
+    }
+
+    @Override
+    protected void onPause()
+    {
+        super.onPause();
+
+        if (gamePanel != null)
+            gamePanel.pauseEvent();
     }
 }

@@ -1,15 +1,19 @@
 package thenameofd.dinossauro;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.res.Resources;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.support.annotation.NonNull;
+import android.util.DisplayMetrics;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
+import android.view.WindowManager;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -19,9 +23,11 @@ import java.util.ListIterator;
 import java.util.Random;
 
 
-public class GamePanel extends SurfaceView implements SurfaceHolder.Callback
+public class GamePanel
 {
     public static int VEL_X = -12;
+
+    private Activity activity;
 
     private MainThread thread;
     private Background bg;
@@ -36,25 +42,31 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback
     private long delay_score = 500;
 
     private boolean gameOver;
+    private boolean gamePause;
+    private boolean gamePlay;
 
     private Preference preference;
 
     private int meioTela;
 
-    public GamePanel(Context context) {
-        super(context);
-        preference = new Preference(context);
+    private int deviceWidth;
+    private int deviceHeight;
 
+    public GamePanel(Activity activity) {
+        this.activity = activity;
+        preference = new Preference(activity);
 
-        getHolder().addCallback(this);
-        thread = new MainThread(getHolder(), this);
+        DisplayMetrics displayMetrics = new DisplayMetrics();
+        WindowManager windowmanager = (WindowManager) activity.getApplicationContext().getSystemService(Context.WINDOW_SERVICE);
+        windowmanager.getDefaultDisplay().getMetrics(displayMetrics);
+        deviceWidth = displayMetrics.widthPixels;
+        deviceHeight = displayMetrics.heightPixels;
 
-        setFocusable(true);
+        initialize();
     }
 
-    @Override
-    public void surfaceCreated(SurfaceHolder holder) {
-        meioTela = getHeight()/2;
+    private void initialize() {
+        meioTela = deviceHeight/2;
         gameOver = false;
 
         bg = new Background(this);
@@ -69,59 +81,38 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback
         startTime_score = System.nanoTime();
 
         player = new Player(this);
-
-        thread.setRunning(true);
-        thread.start();
     }
 
-    @Override
-    public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
 
-    }
-
-    @Override
-    public void surfaceDestroyed(SurfaceHolder holder) {
-        boolean retry = true;
-        while (retry) {
-            try {
-                thread.setRunning(false);
-                thread.join();
-
-                retry = false;
-            } catch (InterruptedException e){
-                e.printStackTrace();
-            }
-        }
-    }
 
     public void update()
     {
-        if (!gameOver) {
-            if (!collision()) {
-                bg.update();
+        if (!gamePause) {
+            if (!gameOver) {
+                if (!collision()) {
+                    bg.update();
 
+                    frameCount++;
+                    if (frameCount > frame) {
+                        frameCount = 0;
+                        obstaculos.add(new Obstaculo(this));
+
+                        setDelay();
+                    }
+
+                    for (int i = 0; i < obstaculos.size(); i++) {
+                        obstaculos.get(i).update();
+                    }
+
+                    player.update();
+                    updateScore();
+                }
+            } else {
                 frameCount++;
-                if (frameCount > frame) {
-                    frameCount = 0;
-                    obstaculos.add(new Obstaculo(this));
-
-                    setDelay();
-                }
-
-                for (int i = 0; i < obstaculos.size(); i++) {
-                    obstaculos.get(i).update();
-                }
-
-                player.update();
-                updateScore();
             }
-        }
-        else {
-            frameCount++;
         }
     }
 
-    @Override
     public void draw (Canvas canvas)
     {
         bg.draw(canvas);
@@ -144,12 +135,19 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback
         if (gameOver) {
             drawGameOver(canvas);
         }
+
+        else if (gamePause) {
+            drawGamePause(canvas);
+        }
     }
 
-    @Override
-    public boolean onTouchEvent(MotionEvent event) {
+    public void onTouchEvent(MotionEvent event) {
         if (event.getAction() == MotionEvent.ACTION_DOWN) {
-            if (!gameOver) {
+            if (gamePause) {
+                gamePlay = true;
+                gamePause = false;
+            }
+            else if (!gameOver) {
                 if (event.getY() < meioTela) {
                     player.pular();
                 } else {
@@ -162,8 +160,6 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback
                 }
             }
         }
-
-        return super.onTouchEvent(event);
     }
 
     private void setDelay() {
@@ -215,8 +211,17 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback
         canvas.drawText("Toque na tela para jogar outra vez", canvas.getWidth()/2 - 300, canvas.getHeight()/2 -200, paint);
     }
 
+    private void drawGamePause(Canvas canvas) {
+        Paint paint = new Paint();
+        paint.setColor(Color.WHITE);
+        paint.setTextSize(40);
+        canvas.drawText("Toque na tela para continuar", canvas.getWidth()/2 - 300, canvas.getHeight()/2 -200, paint);
+    }
+
     private void reset() {
         gameOver = false;
+        gamePause = false;
+        gamePlay = true;
 
         obstaculos = new ArrayList<Obstaculo>();
         obstaculos.add(new Obstaculo(this));
@@ -233,5 +238,27 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback
         player.perdeu();
         preference.saveHighScore();
         frameCount = 0;
+    }
+
+    public void resumeEvent()     {
+//        gamePlay = true;
+//        gamePause = false;
+    }
+
+    public void pauseEvent() {
+        gamePause = true;
+        gamePlay = false;
+    }
+
+    public Resources getResources() {
+        return activity.getResources();
+    }
+
+    public int getWidth() {
+        return deviceWidth;
+    }
+
+    public int getHeight() {
+        return deviceHeight;
     }
 }
