@@ -28,12 +28,14 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback
     private Player player;
     private ArrayList<Obstaculo> obstaculos;
 
-    private long startTime;
-    private long delay;
+    private int frameCount;
+    private int frame;
     private Random r;
 
     private long startTime_score;
     private long delay_score = 500;
+
+    private boolean gameOver;
 
     private Preference preference;
 
@@ -53,13 +55,14 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback
     @Override
     public void surfaceCreated(SurfaceHolder holder) {
         meioTela = getHeight()/2;
+        gameOver = false;
 
         bg = new Background(this);
 
         obstaculos = new ArrayList<Obstaculo>();
         obstaculos.add(new Obstaculo(this));
 
-        startTime = System.nanoTime();
+        frameCount = 0;
         r = new Random();
         setDelay();
 
@@ -93,23 +96,25 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback
 
     public void update()
     {
-        if (!collision()) {
-            bg.update();
+        if (!gameOver) {
+            if (!collision()) {
+                bg.update();
 
-            long elapsed = (System.nanoTime() - startTime) / 1000000;
-            if (elapsed > delay) {
-                startTime = System.nanoTime();
-                obstaculos.add(new Obstaculo(this));
+                frameCount++;
+                if (frameCount > frame) {
+                    frameCount = 0;
+                    obstaculos.add(new Obstaculo(this));
 
-                setDelay();
+                    setDelay();
+                }
+
+                for (int i = 0; i < obstaculos.size(); i++) {
+                    obstaculos.get(i).update();
+                }
+
+                player.update();
+                updateScore();
             }
-
-            for (int i = 0; i < obstaculos.size(); i++) {
-                obstaculos.get(i).update();
-            }
-
-            player.update();
-            updateScore();
         }
     }
 
@@ -149,20 +154,26 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback
     }
 
     private void setDelay() {
-        delay = r.nextInt(4000) + 1500;
+        frame = r.nextInt(100) + 30;
     }
 
     private boolean collision() {
+
+
         Rect playerRect = player.getRectangle();
         for (int i = 0; i < obstaculos.size(); i++) {
             Obstaculo obstaculo = obstaculos.get(i);
             if (Rect.intersects(playerRect, obstaculo.getRectangle())) {
                 if (obstaculo.obstaculoVoa() && !player.abaixando()) {
                     player.perdeu();
+                    gameOver = true;
+
                     return true;
                 }
                 else if (!obstaculo.obstaculoVoa() && !player.pulando()) {
                     player.perdeu();
+                    gameOver = true;
+
                     return true;
                 }
             }
