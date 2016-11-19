@@ -63,4 +63,8 @@ public class Animation {
     public boolean animando() {
         return currentFrame > 0 && !playedOnce;
     }
+
+    public void reset() {
+        currentFrame = 0;
+    }
 }

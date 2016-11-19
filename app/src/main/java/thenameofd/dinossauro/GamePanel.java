@@ -116,6 +116,9 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback
                 updateScore();
             }
         }
+        else {
+            frameCount++;
+        }
     }
 
     @Override
@@ -137,16 +140,26 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback
 
         player.draw(canvas);
         drawScore(canvas);
+
+        if (gameOver) {
+            drawGameOver(canvas);
+        }
     }
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         if (event.getAction() == MotionEvent.ACTION_DOWN) {
-            if (event.getY() < meioTela) {
-                player.pular();
+            if (!gameOver) {
+                if (event.getY() < meioTela) {
+                    player.pular();
+                } else {
+                    player.abaixar();
+                }
             }
             else {
-                player.abaixar();
+                if (frameCount > 30) {
+                    reset();
+                }
             }
         }
 
@@ -158,22 +171,16 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback
     }
 
     private boolean collision() {
-
-
         Rect playerRect = player.getRectangle();
         for (int i = 0; i < obstaculos.size(); i++) {
             Obstaculo obstaculo = obstaculos.get(i);
             if (Rect.intersects(playerRect, obstaculo.getRectangle())) {
                 if (obstaculo.obstaculoVoa() && !player.abaixando()) {
-                    player.perdeu();
-                    gameOver = true;
-
+                    setGameOver();
                     return true;
                 }
                 else if (!obstaculo.obstaculoVoa() && !player.pulando()) {
-                    player.perdeu();
-                    gameOver = true;
-
+                    setGameOver();
                     return true;
                 }
             }
@@ -196,5 +203,35 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback
         paint.setColor(Color.BLACK);
         paint.setTextSize(40);
         canvas.drawText("Score: " + preference.getScore(), canvas.getWidth() - 300, 100, paint);
+    }
+
+    private void drawGameOver(Canvas canvas) {
+        Paint paint = new Paint();
+        paint.setColor(Color.WHITE);
+        paint.setTextSize(40);
+        canvas.drawText("GAME OVER", canvas.getWidth()/2 - 100, canvas.getHeight()/2 - 50, paint);
+        canvas.drawText("High Score: " + preference.getHighScore(), canvas.getWidth()/2 - 120, canvas.getHeight()/2, paint);
+        canvas.drawText("Score: " + preference.getScore(), canvas.getWidth()/2 - 80, canvas.getHeight()/2 + 50, paint);
+        canvas.drawText("Toque na tela para jogar outra vez", canvas.getWidth()/2 - 300, canvas.getHeight()/2 -200, paint);
+    }
+
+    private void reset() {
+        gameOver = false;
+
+        obstaculos = new ArrayList<Obstaculo>();
+        obstaculos.add(new Obstaculo(this));
+
+        player.reset();
+
+        preference.zerarScore();
+
+        frameCount = 0;
+    }
+
+    private void setGameOver() {
+        gameOver = true;
+        player.perdeu();
+        preference.saveHighScore();
+        frameCount = 0;
     }
 }

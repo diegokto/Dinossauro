@@ -45,8 +45,8 @@ public class Preference {
 
     public void setScore(int score) {
         this.score = score;
-        if (score > highScore)
-            highScore = score;
+//        if (score > highScore)
+//            highScore = score;
     }
 
     public void savePreferences()
@@ -54,8 +54,32 @@ public class Preference {
         if (sharedPreferences != null) {
             SharedPreferences.Editor editor = sharedPreferences.edit();
 
+            if (score > highScore)
+                highScore = score;
+
             editor.putInt(KEY_HIGHSCORE, highScore);
             editor.putInt(KEY_SCORE, score);
+            editor.commit();
+        }
+    }
+
+    public void saveScore() {
+        if (sharedPreferences != null) {
+            SharedPreferences.Editor editor = sharedPreferences.edit();
+
+            editor.putInt(KEY_SCORE, score);
+            editor.commit();
+        }
+    }
+
+    public void saveHighScore() {
+        if (sharedPreferences != null) {
+            SharedPreferences.Editor editor = sharedPreferences.edit();
+
+            if (score > highScore)
+                highScore = score;
+
+            editor.putInt(KEY_HIGHSCORE, highScore);
             editor.commit();
         }
     }

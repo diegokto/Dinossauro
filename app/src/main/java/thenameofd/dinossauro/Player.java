@@ -220,4 +220,16 @@ public class Player {
             down = false;
         return down;
     }
+
+    public void reset() {
+        jump = false;
+        down = false;
+        gameOver = false;
+
+        animation_down.reset();
+        animation_jump.reset();
+        animation_run.reset();
+
+        y = groundY;
+    }
 }
