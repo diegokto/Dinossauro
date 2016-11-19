@@ -53,6 +53,8 @@ public class GamePanel
     private int deviceWidth;
     private int deviceHeight;
 
+    private MyAudio audio;
+
     public GamePanel(Activity activity) {
         this.activity = activity;
         preference = new Preference(activity);
@@ -63,6 +65,7 @@ public class GamePanel
         deviceWidth = displayMetrics.widthPixels;
         deviceHeight = displayMetrics.heightPixels;
 
+        audio = new MyAudio(activity, true);
         initialize();
     }
 
@@ -163,6 +166,7 @@ public class GamePanel
             else if (!gameOver) {
                 if (event.getY() < meioTela) {
                     player.pular();
+                    audio.puloPlay();
                 } else {
                     player.abaixar();
                 }
@@ -186,10 +190,12 @@ public class GamePanel
             if (Rect.intersects(playerRect, obstaculo.getRectangle())) {
                 if (obstaculo.obstaculoVoa() && !player.abaixando()) {
                     setGameOver();
+                    audio.colisaoPlay();
                     return true;
                 }
                 else if (!obstaculo.obstaculoVoa() && !player.pulando()) {
                     setGameOver();
+                    audio.colisaoPlay();
                     return true;
                 }
             }
