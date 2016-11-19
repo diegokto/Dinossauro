@@ -36,6 +36,8 @@ public class Player {
     private long startTime;
     private long delay;
     private boolean piscar;
+    private int frameCount;
+    private int frame;
 
     private int g = 10; //gravidade
     private int margemErroY = 20;
@@ -81,16 +83,16 @@ public class Player {
 
         animation_run = new Animation();
         animation_run.setFrames(images_run);
-        animation_run.setDelay(80);
+        animation_run.setDelay(2);
         animation_run.setLoop(true);
 
         animation_jump = new Animation();
         animation_jump.setFrames(images_jump);
-        animation_jump.setDelay(80);
+        animation_jump.setDelay(2);
 
         animation_down = new Animation();
         animation_down.setFrames(images_down);
-        animation_down.setDelay(100);
+        animation_down.setDelay(2);
 
         startTime = System.nanoTime();
         delay = 50;
@@ -106,9 +108,9 @@ public class Player {
 
     public void update(){
         if (pulando()) {
-            long elapsed = (System.nanoTime() - startTime)/1000000;
-            if (elapsed > delay) {
-                startTime = System.nanoTime();
+            frameCount++;
+            if (frameCount > 1) {
+                frameCount = 0;
 
                 y += dy;
                 dy += g;
@@ -158,7 +160,7 @@ public class Player {
     public void pular() {
         if (!jump) {
             jump = true;
-            dy = -80;
+            dy = -60;
             animation_jump.iniciar();
         }
     }

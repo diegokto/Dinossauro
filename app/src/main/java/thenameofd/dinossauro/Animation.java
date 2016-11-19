@@ -5,26 +5,27 @@ import android.graphics.Bitmap;
 public class Animation {
     private Bitmap[] frames;
     private int currentFrame;
-    private long startTime;
-    private long delay;
+    private int frameCount;
+    private int delayFrame;
     private boolean playedOnce;
     private boolean loop;
 
     public Animation() {
-        startTime = System.nanoTime();
+        frameCount = 0;
     }
 
     public void iniciar() {
         currentFrame = -1;
         playedOnce = false;
+        frameCount = 0;
     }
 
     public void setFrames(Bitmap[] frames) {
         this.frames = frames;
     }
 
-    public void setDelay(long d) {
-        this.delay = d;
+    public void setDelay(int d) {
+        this.delayFrame = d;
     }
 
     public void setLoop(boolean b) {
@@ -32,10 +33,10 @@ public class Animation {
     }
 
     public void update() {
-        long elapsed = (System.nanoTime() - startTime)/1000000;
-        if (elapsed > delay) {
+        frameCount++;
+        if (frameCount > delayFrame) {
             currentFrame++;
-            startTime = System.nanoTime();
+            frameCount = 0;
         }
 
         if (currentFrame == frames.length) {
